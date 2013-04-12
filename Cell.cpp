@@ -76,6 +76,8 @@ bool		Cell::loadProteins(tinyxml2::XMLDocument &xml)
     {
       protein = new t_protein;
       protein->name = prot->FirstChildElement("name")->GetText();
+      protein->concentration = atoi(prot->FirstChildElement("concentration")->GetText());
+      protein->degradationRate = atoi(prot->FirstChildElement("degradationRate")->GetText());
       std::cout << protein->name << std::endl;
       link = prot->FirstChildElement("link");
       while (link)

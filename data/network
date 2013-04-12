@@ -24,6 +24,8 @@
 
 <protein>
   <name>Prot1</name>
+  <concentration>0.2</concentration>
+  <degradationRate>0.1</degradationRate>
   <link>
     <name>Prom1</name>
     <type>Activator</type>
@@ -36,6 +38,8 @@
 
 <protein>
   <name>Prot2</name>
+  <concentration>0.2</concentration>
+  <degradationRate>0.2</degradationRate>
   <link>
     <name>Prom1</name>
     <type>Repressor</type>
@@ -48,6 +52,8 @@
 
 <protein>
   <name>Prot3</name>
+  <concentration>0.2</concentration>
+  <degradationRate>0.1</degradationRate>
   <link>
     <name>Prom3</name>
     <type>Activator</type>
@@ -56,6 +62,8 @@
 
 <protein>
   <name>Prot4</name>
+  <concentration>0.2</concentration>
+  <degradationRate>0.1</degradationRate>
   <link>
     <name>Prom3</name>
     <type>Repressor</type>

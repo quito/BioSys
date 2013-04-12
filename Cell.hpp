@@ -19,13 +19,11 @@ struct s_promoter;
 typedef struct	s_protein
 {
   std::string			name;
+  float				concentration;
+  float				degradationRate;
   std::vector<std::pair<std::string, Link::Type> >	linksName;
   std::vector<std::pair<struct s_promoter *, Link::Type> > promoters;
 }		t_protein;
-
-typedef struct s_cistron
-{
-}		t_cistron;
 
 typedef struct	s_promoter
 {
