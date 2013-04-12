@@ -10,7 +10,7 @@ namespace Link
   enum Type
     {
       ACTIVATOR,
-      INIBITOR
+      REPRESSOR
     };
 }
 
@@ -18,6 +18,8 @@ struct s_promoter;
 
 typedef struct	s_protein
 {
+  std::string			name;
+  std::vector<std::pair<std::string, Link::Type> >	linksName;
   std::vector<std::pair<struct s_promoter *, Link::Type> > promoters;
 }		t_protein;
 
@@ -46,7 +48,10 @@ public:
   
   bool		LoadFromFile(const std::string &path);
   bool		loadPromoters(tinyxml2::XMLDocument &xml);
+  void		pushProtein(t_protein *protein, tinyxml2::XMLNode *name,
+			    tinyxml2::XMLNode *linkType);
   bool		loadProteins(tinyxml2::XMLDocument &xml);
+  void		makeNetwork(void);
 };
 
 #endif
