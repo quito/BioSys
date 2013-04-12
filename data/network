@@ -1,0 +1,63 @@
+<promoter>
+  <name>Prom1</name>
+  <links>
+    <name>Prot1</name>
+  </links>
+</promoter>
+
+<promoter>
+  <name>Prom2</name>
+  <links>
+    <name>Prot1</name>
+    <name>Prot2</name>
+  </links>
+</promoter>
+
+<promoter>
+  <name>Prom3</name>
+  <links>
+    <name>Prot3</name>
+    <name>Prot4</name>
+  </links>
+</promoter>
+
+
+<protein>
+  <name>Prot1</name>
+  <link>
+    <name>Prom1</name>
+    <type>Activator</type>
+  </link>
+  <link>
+    <name>Prom2</name>
+    <type>Repressor</type>
+  </link>
+</protein>
+
+<protein>
+  <name>Prot2</name>
+  <link>
+    <name>Prom1</name>
+    <type>Repressor</type>
+  </link>
+  <link>
+    <name>Prom2</name>
+    <type>Activator</type>
+  </link>
+</protein>
+
+<protein>
+  <name>Prot3</name>
+  <link>
+    <name>Prom3</name>
+    <type>Activator</type>
+  </link>
+</protein>
+
+<protein>
+  <name>Prot4</name>
+  <link>
+    <name>Prom3</name>
+    <type>Repressor</type>
+  </link>
+</protein>
