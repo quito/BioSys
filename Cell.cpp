@@ -9,6 +9,10 @@ Cell::Cell()
 {
 }
 
+Cell::~Cell()
+{
+}
+
 bool		Cell::loadPromoters(tinyxml2::XMLDocument &xml)
 {
   tinyxml2::XMLNode *prom;
@@ -97,10 +101,78 @@ bool		Cell::LoadFromFile(const std::string &path)
   doc.LoadFile(path.c_str());
   loadPromoters(doc);
   loadProteins(doc);
-  
+  makeNetwork();
   return true;
+}
+
+t_protein	*Cell::getProteinFromName(const std::string &name) const
+{
+  std::vector<t_protein*>::const_iterator	it = _proteins.begin();
+  std::vector<t_protein*>::const_iterator	end = _proteins.end();
+
+  for (; it != end; ++it)
+    {
+      if ((*it) && !name.compare((*it)->name))
+	return (*it);
+    }
+  return (NULL);
+}
+
+t_promoter	*Cell::getPromoterFromName(const std::string &name) const
+{
+  std::vector<t_promoter*>::const_iterator	it = _promoters.begin();
+  std::vector<t_promoter*>::const_iterator	end = _promoters.end();
+
+  for (; it != end; ++it)
+    {
+      if ((*it) && !name.compare((*it)->name))
+	return (*it);
+    }
+  return (NULL);
+}
+
+void		Cell::linkProteins(void)
+{
+  std::vector<t_protein*>::iterator	it = _proteins.begin();
+  std::vector<t_protein*>::iterator	end = _proteins.end();
+  std::vector<std::pair<std::string, Link::Type> >::iterator	lit;
+  std::vector<std::pair<std::string, Link::Type> >::iterator	lend;
+  t_promoter		*prom;
+
+  for (; it != end; ++it)
+    {
+      lit = (*it)->linksName.begin();
+      lend = (*it)->linksName.end();
+      for (; lit != lend; ++lit)
+	{
+	  prom = this->getPromoterFromName((*lit).first);
+	  (*it)->promoters.push_back(std::make_pair(prom, (*lit).second));
+	}
+    }  
+}
+
+void		Cell::linkPromoters(void)
+{
+  std::vector<t_promoter*>::iterator	it = _promoters.begin();
+  std::vector<t_promoter*>::iterator	end = _promoters.end();
+  std::vector<std::string>::iterator	lit;
+  std::vector<std::string>::iterator	lend;
+  t_protein		*prot;
+
+  for (; it != end; ++it)
+    {
+      lit = (*it)->linksName.begin();
+      lend = (*it)->linksName.end();
+      for (; lit != lend; ++lit)
+	{
+	  prot = this->getProteinFromName(*lit);
+	  (*it)->proteins.push_back(prot);
+	}
+    }  
 }
 
 void		Cell::makeNetwork(void)
 {
+  this->linkProteins();
+  this->linkPromoters();
 }

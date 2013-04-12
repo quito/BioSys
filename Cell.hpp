@@ -44,13 +44,17 @@ private:
 public:
   
   Cell();
-  ~Cell(){}
+  ~Cell();
   
   bool		LoadFromFile(const std::string &path);
   bool		loadPromoters(tinyxml2::XMLDocument &xml);
   void		pushProtein(t_protein *protein, tinyxml2::XMLNode *name,
 			    tinyxml2::XMLNode *linkType);
   bool		loadProteins(tinyxml2::XMLDocument &xml);
+  t_protein	*getProteinFromName(const std::string &name) const;
+  t_promoter	*getPromoterFromName(const std::string &name) const;
+  void		linkProteins(void);
+  void		linkPromoters(void);
   void		makeNetwork(void);
 };
 
