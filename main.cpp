@@ -48,7 +48,8 @@ void graphic()
 int main()
 {
   // plot();
-  Cell c;
+  Cell c(true);
   c.LoadFromFile("./data/network");
+  c.live();
   return 0;
 }

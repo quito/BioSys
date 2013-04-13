@@ -53,6 +53,11 @@ unsigned	Curve::getColor(void) const
   return _color;
 }
 
+void		Curve::setColor(unsigned color)
+{
+  _color = color;
+}
+
 
 Plot::Plot(float minx, float maxx, float  miny, float maxy,
 	   unsigned x, unsigned y, std::string const &title) :
@@ -113,4 +118,22 @@ void		Plot::drawCurves(void)
 void		Plot::addCurve(Curve *curve)
 {
   _curves.push_back(curve);
+}
+
+void		Plot::clearCurves(void)
+{
+  _curves.clear();
+}
+
+void		Plot::deleteCurve(Curve *ptr)
+{
+  std::vector<Curve*>::iterator	it = _curves.begin();
+  std::vector<Curve*>::iterator	end = _curves.end();
+
+  for (; it != end; ++it)
+    if ((*it) == ptr)
+      {
+	_curves.erase(it);
+	return ;
+      }
 }

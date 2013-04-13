@@ -27,6 +27,7 @@
   <concentration>0.2</concentration>
   <degradationRate>0.1</degradationRate>
   <curveColor>0xFF0000</curveColor>
+  <enableCurve>True</enableCurve>
   <link>
     <name>Prom1</name>
     <type>Activator</type>
@@ -42,6 +43,7 @@
   <concentration>0.2</concentration>
   <degradationRate>0.2</degradationRate>
   <curveColor>0x00FF00</curveColor>
+  <enableCurve>True</enableCurve>
   <link>
     <name>Prom1</name>
     <type>Repressor</type>
@@ -57,6 +59,7 @@
   <concentration>0.2</concentration>
   <degradationRate>0.1</degradationRate>
   <curveColor>0x0000FF</curveColor>
+  <enableCurve>True</enableCurve>
   <link>
     <name>Prom3</name>
     <type>Activator</type>
@@ -68,6 +71,7 @@
   <concentration>0.2</concentration>
   <degradationRate>0.1</degradationRate>
   <curveColor>0xFF00FF</curveColor>
+  <enableCurve>True</enableCurve>
   <link>
     <name>Prom3</name>
     <type>Repressor</type>

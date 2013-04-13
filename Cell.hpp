@@ -4,6 +4,7 @@
 
 # include <vector>
 # include "tinyxml2.h"
+# include "plot.hpp"
 
 namespace Link
 {
@@ -22,6 +23,7 @@ typedef struct	s_protein
   float				concentration;
   float				degradationRate;
   unsigned			curveColor;
+  Curve				*curve;
   std::vector<std::pair<std::string, Link::Type> >	linksName;
   std::vector<std::pair<struct s_promoter *, Link::Type> > promoters;
 }		t_protein;
@@ -39,10 +41,15 @@ private:
   
   std::vector<t_protein*>	_proteins;
   std::vector<t_promoter*>	_promoters;
-  
+  bool				_live;
+  float				_time;
+
+  Plot				*_plot;
+  bool				_isPlot;
+
 public:
   
-  Cell();
+  Cell(bool isPlot = false);
   ~Cell();
   
   bool		LoadFromFile(const std::string &path);
@@ -55,6 +62,13 @@ public:
   void		linkProteins(void);
   void		linkPromoters(void);
   void		makeNetwork(void);
+
+  void		drawCurves(void);
+  void		updateCurves(void);
+  void		enablePlot(void);
+  void		disablePlot(void);
+
+  void		live(void);
 };
 
 #endif

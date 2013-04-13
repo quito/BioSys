@@ -23,7 +23,7 @@ private:
 
 public:
 
-  Curve(unsigned color);
+  Curve(unsigned color = 0xFFFFFF);
   ~Curve(){}
 
   void	addPoint(float x, float y);
@@ -34,6 +34,7 @@ public:
   std::pair<float, float> const	&getPoint(unsigned id) const;
   unsigned getNbPoints(void) const;
   unsigned getColor(void) const;
+  void	setColor(unsigned color);
 };
 
 /*
@@ -64,6 +65,8 @@ public:
   void	drawCurve(Curve &curve);
   void	drawCurves(void);
   void	addCurve(Curve *curve);
+  void	clearCurves(void);
+  void	deleteCurve(Curve *ptr);
 };
 
 #endif

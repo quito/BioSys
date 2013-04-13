@@ -2,16 +2,34 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <ctime>
 #include "Cell.hpp"
 #include "tinyxml2.h"
 #include "tools.hpp"
 
-Cell::Cell()
+Cell::Cell(bool isPlot) :
+  _live(false),
+  _time(0.f),
+  _plot(NULL),
+  _isPlot(isPlot)
 {
 }
 
 Cell::~Cell()
 {
+  std::vector<t_protein*>::iterator	it = _proteins.begin();
+  std::vector<t_protein*>::iterator	end = _proteins.end();
+  std::vector<t_promoter*>::iterator	pit = _promoters.begin();
+  std::vector<t_promoter*>::iterator	pend = _promoters.end();
+
+  delete _plot;
+  for (; it != end; ++it)
+    {
+      delete (*it)->curve;
+      delete (*it);
+    }
+  for (; pit != pend; ++pit)
+    delete (*pit);
 }
 
 bool		Cell::loadPromoters(tinyxml2::XMLDocument &xml)
@@ -24,7 +42,6 @@ bool		Cell::loadPromoters(tinyxml2::XMLDocument &xml)
   prom = xml.FirstChildElement("promoter");
   while (prom)
     {
-      std::cout << prom->FirstChildElement("name")->GetText() << std::endl;
       promoter = new t_promoter;
       promoter->name = prom->FirstChildElement("name")->GetText();
       link = prom->FirstChildElement("links");
@@ -34,7 +51,6 @@ bool		Cell::loadPromoters(tinyxml2::XMLDocument &xml)
 	  while (name)
 	    {
 	      promoter->linksName.push_back(name->ToElement()->GetText());
-	      std::cout << "-> " << name->ToElement()->GetText() << std::endl;
 	      xml.DeleteNode(name);
 	      name = link->FirstChildElement("name");
 	    }
@@ -52,15 +68,9 @@ void		Cell::pushProtein(t_protein *protein, tinyxml2::XMLNode *name,
   if (name && linkType)
     {
       if (!strcmp(linkType->ToElement()->GetText(), "Activator"))
-	{
-	  std::cout << "-> " << name->ToElement()->GetText() << " : Activator" << std::endl;
-	  protein->linksName.push_back(std::make_pair(name->ToElement()->GetText(), Link::ACTIVATOR));
-	}
+	protein->linksName.push_back(std::make_pair(name->ToElement()->GetText(), Link::ACTIVATOR));
       else if (!strcmp(linkType->ToElement()->GetText(), "Repressor"))
-	{
-	  std::cout << "-> " << name->ToElement()->GetText() << " : Repressor" << std::endl;
-	  protein->linksName.push_back(std::make_pair(name->ToElement()->GetText(), Link::REPRESSOR));
-	}
+	protein->linksName.push_back(std::make_pair(name->ToElement()->GetText(), Link::REPRESSOR));
     }
 }
 
@@ -80,7 +90,9 @@ bool		Cell::loadProteins(tinyxml2::XMLDocument &xml)
       protein->concentration = atof(prot->FirstChildElement("concentration")->GetText());
       protein->degradationRate = atof(prot->FirstChildElement("degradationRate")->GetText());
       protein->curveColor = Tools::ahtoui(prot->FirstChildElement("curveColor")->GetText());
-      std::cout << protein->name <<  std::endl;
+      protein->curve = NULL;
+      if (!strcmp(prot->FirstChildElement("enableCurve")->GetText(), "True"))
+	protein->curve = new Curve(protein->curveColor);
       link = prot->FirstChildElement("link");
       while (link)
 	{
@@ -104,8 +116,11 @@ bool		Cell::LoadFromFile(const std::string &path)
 
   doc.LoadFile(path.c_str());
   loadPromoters(doc);
+  std:: cout << "[\033[1;32m+\033[0m] Promoters Loaded" << std::endl;
   loadProteins(doc);
+  std:: cout << "[\033[1;32m+\033[0m] Proteins Loaded" << std::endl;
   makeNetwork();
+  std:: cout << "[\033[1;32m+\033[0m] Network Linked" << std::endl;
   return true;
 }
 
@@ -179,4 +194,66 @@ void		Cell::makeNetwork(void)
 {
   this->linkProteins();
   this->linkPromoters();
+}
+
+
+void		Cell::enablePlot(void)
+{
+  std::vector<t_protein*>::iterator	it = _proteins.begin();
+  std::vector<t_protein*>::iterator	end = _proteins.end();
+
+  if (_plot)
+    delete _plot;
+  _plot = new Plot(-0.5, 20, -0.5, 20, 600, 600, "System Biology simulation");
+  _isPlot = true;
+  _plot->drawRules();
+  for (; it != end; ++it)
+    _plot->addCurve((*it)->curve);
+}
+
+void		Cell::disablePlot(void)
+{
+  if (_plot)
+    {
+      delete _plot;
+      _plot = NULL;
+      _isPlot = false;
+    }
+}
+
+void		Cell::drawCurves(void)
+{
+  if (_plot)
+    _plot->drawCurves();
+}
+
+void		Cell::updateCurves(void)
+{
+  std::vector<t_protein*>::iterator	it = _proteins.begin();
+  std::vector<t_protein*>::iterator	end = _proteins.end();
+
+  for (; it != end; ++it)
+    if (*it && (*it)->curve)
+      {
+	(*it)->curve->addPoint(_time, (*it)->concentration);
+      }
+}
+
+void		Cell::live(void)
+{
+  _live = true;
+  while (_live)
+    {
+      if (_isPlot && !_plot)
+	this->enablePlot();
+
+
+      if (_isPlot && _plot)
+	{
+	  this->updateCurves();
+	  this->drawCurves();
+	}
+      _time += 0.001;
+      usleep(1);
+    }
 }
