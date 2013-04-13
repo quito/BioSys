@@ -1,4 +1,4 @@
-SDL-Renderer
-============
+BioSys
+======
 
-A C++ SDL minimal code for don't waste time.
+A C++ simulation of systems biology on prokaryotics cells.
