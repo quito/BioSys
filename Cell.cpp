@@ -91,6 +91,7 @@ bool		Cell::loadProteins(tinyxml2::XMLDocument &xml)
       protein->degradationRate = atof(prot->FirstChildElement("degradationRate")->GetText());
       protein->curveColor = Tools::ahtoui(prot->FirstChildElement("curveColor")->GetText());
       protein->curve = NULL;
+      protein->tmpConcentration = protein->concentration;
       if (!strcmp(prot->FirstChildElement("enableCurve")->GetText(), "True"))
 	protein->curve = new Curve(protein->curveColor);
       link = prot->FirstChildElement("link");
@@ -204,7 +205,7 @@ void		Cell::enablePlot(void)
 
   if (_plot)
     delete _plot;
-  _plot = new Plot(-0.5, 20, -0.5, 20, 600, 600, "System Biology simulation");
+  _plot = new Plot(-0.1, 5, -0.1, 1, 600, 600, "Systems Biology simulation");
   _isPlot = true;
   _plot->drawRules();
   for (; it != end; ++it)
@@ -234,9 +235,27 @@ void		Cell::updateCurves(void)
 
   for (; it != end; ++it)
     if (*it && (*it)->curve)
-      {
-	(*it)->curve->addPoint(_time, (*it)->concentration);
-      }
+      (*it)->curve->addPoint(_time, (*it)->concentration);
+}
+
+void		Cell::applyDegradation(void)
+{
+  std::vector<t_protein*>::iterator	it = _proteins.begin();
+  std::vector<t_protein*>::iterator	end = _proteins.end();
+
+  for (; it != end; ++it)
+    if (*it)
+      (*it)->tmpConcentration =  (*it)->concentration * (1.f - (*it)->degradationRate);
+}
+
+void		Cell::applyCalculus(void)
+{
+  std::vector<t_protein*>::iterator	it = _proteins.begin();
+  std::vector<t_protein*>::iterator	end = _proteins.end();
+
+  for (; it != end; ++it)
+    if (*it)
+      (*it)->concentration = (*it)->tmpConcentration < 0 ? 0 : (*it)->tmpConcentration;
 }
 
 void		Cell::live(void)
@@ -248,6 +267,8 @@ void		Cell::live(void)
 	this->enablePlot();
 
 
+      this->applyDegradation();
+      this->applyCalculus();
       if (_isPlot && _plot)
 	{
 	  this->updateCurves();

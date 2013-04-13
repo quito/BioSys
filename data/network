@@ -24,8 +24,8 @@
 
 <protein>
   <name>Prot1</name>
-  <concentration>0.2</concentration>
-  <degradationRate>0.1</degradationRate>
+  <concentration>0.5</concentration>
+  <degradationRate>0.001</degradationRate>
   <curveColor>0xFF0000</curveColor>
   <enableCurve>True</enableCurve>
   <link>
@@ -40,8 +40,8 @@
 
 <protein>
   <name>Prot2</name>
-  <concentration>0.2</concentration>
-  <degradationRate>0.2</degradationRate>
+  <concentration>0.5</concentration>
+  <degradationRate>0.002</degradationRate>
   <curveColor>0x00FF00</curveColor>
   <enableCurve>True</enableCurve>
   <link>
@@ -56,8 +56,8 @@
 
 <protein>
   <name>Prot3</name>
-  <concentration>0.2</concentration>
-  <degradationRate>0.1</degradationRate>
+  <concentration>0.3</concentration>
+  <degradationRate>0.0001</degradationRate>
   <curveColor>0x0000FF</curveColor>
   <enableCurve>True</enableCurve>
   <link>
@@ -68,8 +68,8 @@
 
 <protein>
   <name>Prot4</name>
-  <concentration>0.2</concentration>
-  <degradationRate>0.1</degradationRate>
+  <concentration>0.4</concentration>
+  <degradationRate>0.003</degradationRate>
   <curveColor>0xFF00FF</curveColor>
   <enableCurve>True</enableCurve>
   <link>

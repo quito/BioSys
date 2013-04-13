@@ -21,6 +21,7 @@ typedef struct	s_protein
 {
   std::string			name;
   float				concentration;
+  float				tmpConcentration;
   float				degradationRate;
   unsigned			curveColor;
   Curve				*curve;
@@ -68,6 +69,8 @@ public:
   void		enablePlot(void);
   void		disablePlot(void);
 
+  void		applyDegradation(void);
+  void		applyCalculus(void);
   void		live(void);
 };
 
