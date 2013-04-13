@@ -21,6 +21,7 @@ typedef struct	s_protein
   std::string			name;
   float				concentration;
   float				degradationRate;
+  unsigned			curveColor;
   std::vector<std::pair<std::string, Link::Type> >	linksName;
   std::vector<std::pair<struct s_promoter *, Link::Type> > promoters;
 }		t_protein;

@@ -4,6 +4,7 @@
 #include <string>
 #include "Cell.hpp"
 #include "tinyxml2.h"
+#include "tools.hpp"
 
 Cell::Cell()
 {
@@ -78,6 +79,7 @@ bool		Cell::loadProteins(tinyxml2::XMLDocument &xml)
       protein->name = prot->FirstChildElement("name")->GetText();
       protein->concentration = atof(prot->FirstChildElement("concentration")->GetText());
       protein->degradationRate = atof(prot->FirstChildElement("degradationRate")->GetText());
+      protein->curveColor = Tools::ahtoui(prot->FirstChildElement("curveColor")->GetText());
       std::cout << protein->name <<  std::endl;
       link = prot->FirstChildElement("link");
       while (link)
