@@ -3,6 +3,7 @@
 #include "graphic.hpp"
 #include "plot.hpp"
 #include "Cell.hpp"
+#include "boolParser.hpp"
 
 float func(float x)
 {
@@ -48,8 +49,11 @@ void graphic()
 int main()
 {
   // plot();
-  Cell c(true);
-  c.LoadFromFile("./data/network");
-  c.live();
+  // Cell c(true);
+  // c.LoadFromFile("./data/network");
+  // c.live();
+  BoolParser bp;
+
+  bp.parseStr("(prot1|prot2)&!(prot3)");
   return 0;
 }

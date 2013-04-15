@@ -5,6 +5,7 @@ SRC	=	main.cpp \
 		graphic.cpp \
 		plot.cpp \
 		Cell.cpp \
+		boolParser.cpp \
 		tools.cpp \
 		tinyxml2.cpp
 
