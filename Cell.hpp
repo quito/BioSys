@@ -5,6 +5,7 @@
 # include <vector>
 # include "tinyxml2.h"
 # include "plot.hpp"
+# include "boolParser.hpp"
 
 namespace Link
 {
@@ -33,6 +34,7 @@ typedef struct	s_promoter
 {
   std::string				name;
   std::vector<std::string>		linksName;
+  std::vector<BoolNode*>		formulas;
   std::vector<struct s_protein *>	proteins;
 }		t_promoter;
 
@@ -47,6 +49,7 @@ private:
 
   Plot				*_plot;
   bool				_isPlot;
+  BoolParser			_parser;
 
 public:
   
@@ -54,6 +57,8 @@ public:
   ~Cell();
   
   bool		LoadFromFile(const std::string &path);
+  void		loadFormulas(tinyxml2::XMLDocument &xml, tinyxml2::XMLNode *prom,
+				   t_promoter *promoter);
   bool		loadPromoters(tinyxml2::XMLDocument &xml);
   void		pushProtein(t_protein *protein, tinyxml2::XMLNode *name,
 			    tinyxml2::XMLNode *linkType);

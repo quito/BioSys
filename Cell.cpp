@@ -6,6 +6,7 @@
 #include "Cell.hpp"
 #include "tinyxml2.h"
 #include "tools.hpp"
+#include "boolParser.hpp"
 
 Cell::Cell(bool isPlot) :
   _live(false),
@@ -21,6 +22,8 @@ Cell::~Cell()
   std::vector<t_protein*>::iterator	end = _proteins.end();
   std::vector<t_promoter*>::iterator	pit = _promoters.begin();
   std::vector<t_promoter*>::iterator	pend = _promoters.end();
+  std::vector<BoolNode*>::iterator		fit;
+  std::vector<BoolNode*>::iterator		fend;
 
   delete _plot;
   for (; it != end; ++it)
@@ -29,7 +32,31 @@ Cell::~Cell()
       delete (*it);
     }
   for (; pit != pend; ++pit)
-    delete (*pit);
+    {
+      fit = (*pit)->formulas.begin();
+      fend - (*pit)->formulas.end();
+      for (; fit != fend; ++fit)
+	delete (*fit);
+      delete (*pit);
+    }
+}
+
+void		Cell::loadFormulas(tinyxml2::XMLDocument &xml,
+				   tinyxml2::XMLNode *prom,
+				   t_promoter *promoter)
+{
+  tinyxml2::XMLNode *formulaStr;
+  BoolNode		*ast;
+
+  formulaStr = prom->FirstChildElement("formula");
+  while (formulaStr)
+  {
+    if (formulaStr->ToElement()->GetText()
+	&& (ast = _parser.parseStr(formulaStr->ToElement()->GetText())))
+      promoter->formulas.push_back(ast);
+    xml.DeleteNode(formulaStr);
+    formulaStr = xml.FirstChildElement("formula");
+  }
 }
 
 bool		Cell::loadPromoters(tinyxml2::XMLDocument &xml)
@@ -44,6 +71,8 @@ bool		Cell::loadPromoters(tinyxml2::XMLDocument &xml)
     {
       promoter = new t_promoter;
       promoter->name = prom->FirstChildElement("name")->GetText();
+      this->loadFormulas(xml, prom, promoter);
+      std:: cout << "[\033[1;32m+\033[0m] " << promoter->name << " formulas parsed" << std::endl;
       link = prom->FirstChildElement("links");
       if (link)
 	{

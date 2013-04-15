@@ -251,9 +251,9 @@ BoolNode	*BoolParser::parseStr(const std::string &str)
   this->resetParser();
   this->LexStr(str, _tokenList);
   AST = this->parseORExpr();
-  std::cout << "digraph G {" << std::endl;
-  readTree(AST);
-  std::cout << "}" << std::endl;
+  // std::cout << "digraph G {" << std::endl;
+  // readTree(AST);
+  // std::cout << "}" << std::endl;
   return AST;
 }
 

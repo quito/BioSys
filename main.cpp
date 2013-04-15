@@ -48,12 +48,8 @@ void graphic()
 
 int main()
 {
-  // plot();
-  // Cell c(true);
-  // c.LoadFromFile("./data/network");
-  // c.live();
-  BoolParser bp;
-
-  bp.parseStr("(1|prot0)&!(prot1)");
+  Cell c(true);
+  c.LoadFromFile("./data/network");
+  c.live();
   return 0;
 }
