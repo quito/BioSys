@@ -19,6 +19,12 @@ enum symbols	BoolParser::getSymbol(char c)
     case ')':
       return R_PAR;
       break;
+    case '1':
+      return B_TRUE;
+      break;
+    case '0':
+      return B_FALSE;
+      break;
     case '!':
       return opNOT;
       break;
@@ -165,7 +171,10 @@ BoolNode	*BoolParser::parseOperand(void)
   BoolNode	*nodeChar;
   BoolNode	*nodeName = NULL;
 
-  while ((nodeChar = this->parseChar()))
+  if ((nodeChar = this->parseBool()))
+    return nodeChar;
+  while ((nodeChar = this->parseChar())
+	 || (nodeName && (nodeChar = this->parseBool())))
     {
       if (!nodeName)
 	{
@@ -181,7 +190,23 @@ BoolNode	*BoolParser::parseOperand(void)
 BoolNode	*BoolParser::parseChar(void)
 {
   BoolNode	*node;
+
   if (_tokenList.front().first == CHAR)
+    {
+      node = new BoolNode;
+      node->type = _tokenList.front().first;
+      node->str = _tokenList.front().second;
+      this->popToken();
+      return node;
+    }
+  return NULL;
+}
+
+BoolNode	*BoolParser::parseBool(void)
+{
+  BoolNode	*node;
+
+  if (_tokenList.front().first == B_TRUE || _tokenList.front().first == B_FALSE)
     {
       node = new BoolNode;
       node->type = _tokenList.front().first;

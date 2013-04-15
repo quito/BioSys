@@ -54,6 +54,6 @@ int main()
   // c.live();
   BoolParser bp;
 
-  bp.parseStr("(prot1|prot2)&!(prot3)");
+  bp.parseStr("(1|prot0)&!(prot1)");
   return 0;
 }

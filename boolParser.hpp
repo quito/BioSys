@@ -13,6 +13,8 @@ enum symbols
     opNOT,
     L_PAR,
     R_PAR,
+    B_TRUE,
+    B_FALSE,
     CHAR,
     END
   };
@@ -60,6 +62,7 @@ public:
   BoolNode		*parseNot(void);
   BoolNode		*parseOperand(void);
   BoolNode		*parseChar(void);
+  BoolNode		*parseBool(void);
 
   void			popToken(void);
   void			restoreToken(void);
