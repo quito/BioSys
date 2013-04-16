@@ -1,0 +1,52 @@
+<promoter>
+  <name>PromY</name>
+  <formula>X</formula>
+  <productionSpeed>0.001</productionSpeed>
+  <links>
+    <name>Y</name>
+  </links>
+</promoter>
+
+<promoter>
+  <name>PromZ</name>
+  <formula>X&!Y</formula>
+  <productionSpeed>0.001</productionSpeed>
+  <links>
+    <name>Z</name>
+  </links>
+</promoter>
+
+
+
+
+<protein>
+  <name>X</name>
+  <concentration>0.5</concentration>
+  <degradationRate>0.0000</degradationRate>
+  <curveColor>0xFF00FF</curveColor>
+  <enableCurve>True</enableCurve>
+  <link>
+    <name>PromY</name>
+    <type>Activator</type>
+  </link>
+</protein>
+
+<protein>
+  <name>Y</name>
+  <concentration>0.0</concentration>
+  <degradationRate>0.001</degradationRate>
+  <curveColor>0x00FFFF</curveColor>
+  <enableCurve>True</enableCurve>
+  <link>
+    <name>PromZ</name>
+    <type>Repressor</type>
+  </link>
+</protein>
+
+<protein>
+  <name>Z</name>
+  <concentration>0.0</concentration>
+  <degradationRate>0.001</degradationRate>
+  <curveColor>0xFFFF00</curveColor>
+  <enableCurve>True</enableCurve>
+</protein>

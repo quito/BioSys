@@ -1,0 +1,40 @@
+<promoter>
+  <name>Prom1</name>
+  <formula>!Prot1</formula>
+  <productionSpeed>0.001</productionSpeed>
+  <links>
+    <name>Prot1</name>
+  </links>
+</promoter>
+
+<protein>
+  <name>Prot1</name>
+  <concentration>0.5</concentration>
+  <degradationRate>0.0001</degradationRate>
+  <curveColor>0xFF00FF</curveColor>
+  <enableCurve>True</enableCurve>
+  <link>
+    <name>Prom1</name>
+    <type>Activator</type>
+  </link>
+  <link>
+    <name>Prom2</name>
+    <type>Repressor</type>
+  </link>
+</protein>
+
+<protein>
+  <name>Prot2</name>
+  <concentration>0.5</concentration>
+  <degradationRate>0.002</degradationRate>
+  <curveColor>0x00FFFF</curveColor>
+  <enableCurve>True</enableCurve>
+  <link>
+    <name>Prom1</name>
+    <type>Repressor</type>
+  </link>
+  <link>
+    <name>Prom2</name>
+    <type>Activator</type>
+  </link>
+</protein>
