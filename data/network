@@ -1,6 +1,7 @@
 <promoter>
   <name>Prom1</name>
   <formula>Prot2&!Prot1</formula>
+  <productionSpeed>0.001</productionSpeed>
   <links>
     <name>Prot1</name>
   </links>
@@ -9,6 +10,7 @@
 <promoter>
   <name>Prom2</name>
   <formula>1</formula>
+  <productionSpeed>0.001</productionSpeed>
   <links>
     <name>Prot1</name>
     <name>Prot2</name>
@@ -18,6 +20,7 @@
 <promoter>
   <name>Prom3</name>
   <formula>0</formula>
+  <productionSpeed>0.001</productionSpeed>
   <links>
     <name>Prot3</name>
     <name>Prot4</name>

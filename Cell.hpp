@@ -33,6 +33,7 @@ typedef struct	s_protein
 typedef struct	s_promoter
 {
   std::string				name;
+  float					productionSpeed;
   std::vector<std::string>		linksName;
   std::vector<BoolNode*>		formulas;
   std::vector<struct s_protein *>	proteins;
@@ -76,6 +77,10 @@ public:
 
   void		applyDegradation(void);
   void		applyCalculus(void);
+  float		executeTreeRec(BoolNode *node);
+  void		executeTree(BoolNode *tree, t_promoter *prom);
+  void		applyPromoterProduction(t_promoter *prom);
+  void		applyProduction(void);
   void		live(void);
 };
 

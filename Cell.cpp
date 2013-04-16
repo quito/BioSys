@@ -71,6 +71,7 @@ bool		Cell::loadPromoters(tinyxml2::XMLDocument &xml)
     {
       promoter = new t_promoter;
       promoter->name = prom->FirstChildElement("name")->GetText();
+      promoter->productionSpeed = atof(prom->FirstChildElement("productionSpeed")->GetText());
       this->loadFormulas(xml, prom, promoter);
       std:: cout << "[\033[1;32m+\033[0m] " << promoter->name << " formulas parsed" << std::endl;
       link = prom->FirstChildElement("links");
@@ -287,6 +288,75 @@ void		Cell::applyCalculus(void)
       (*it)->concentration = (*it)->tmpConcentration < 0 ? 0 : (*it)->tmpConcentration;
 }
 
+float		Cell::executeTreeRec(BoolNode *node)
+{
+  Binop		*binop;
+  Unop		*unop;
+
+  if (!node)
+    return 0;
+  if ((binop = dynamic_cast<Binop *>(node)))
+    {
+      if (binop->type == opOR)
+	return this->executeTreeRec(binop->op1) + this->executeTreeRec(binop->op2);
+      else if (binop->type == opAND)
+	{
+	  float		result1;
+	  float		result2;
+	  result1 = this->executeTreeRec(binop->op1);
+	  result2 = this->executeTreeRec(binop->op2);
+	  // return result1 * result2;
+	  return result1 < result2 ? result1 : result2;
+	}
+      return 0.1;
+    }
+  else if ((unop = dynamic_cast<Unop*>(node)))
+    {
+      if (node->type == opNOT)
+	return (- this->executeTreeRec(unop->op1));
+      return 0;
+    }
+  else
+    {
+      if (node->type == CHAR)
+	return this->getProteinFromName(node->str)->concentration;
+      return atoi(node->str.c_str());
+    }
+}
+
+void		Cell::executeTree(BoolNode *tree, t_promoter *prom)
+{
+  std::vector<t_protein *>::iterator	it = prom->proteins.begin();
+  std::vector<t_protein *>::iterator	end = prom->proteins.end();
+  float					production = this->executeTreeRec(tree);
+
+  std::cout << "production de " << production * prom->productionSpeed << std::endl;
+  for (; it != end; ++it)
+    (*it)->tmpConcentration += this->executeTreeRec(tree) * prom->productionSpeed;
+}
+
+void		Cell::applyPromoterProduction(t_promoter *prom)
+{
+  if (!prom)
+    return;
+
+  std::vector<BoolNode*>::const_iterator it = prom->formulas.begin();
+  std::vector<BoolNode*>::const_iterator end = prom->formulas.end();
+
+  for (; it != end; ++it)
+    this->executeTree((*it), prom);
+}
+
+void		Cell::applyProduction(void)
+{
+  std::vector<t_promoter*>::iterator	it = _promoters.begin();
+  std::vector<t_promoter*>::iterator	end = _promoters.end();
+
+  for (; it != end; ++it)
+    this->applyPromoterProduction((*it));
+}
+
+
 void		Cell::live(void)
 {
   _live = true;
@@ -297,6 +367,7 @@ void		Cell::live(void)
 
 
       this->applyDegradation();
+      this->applyProduction();
       this->applyCalculus();
       if (_isPlot && _plot)
 	{
