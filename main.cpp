@@ -49,7 +49,11 @@ void graphic()
 int main()
 {
   Cell c(true);
+  // c.LoadFromFile("./data/autoregulation");
   c.LoadFromFile("./data/network3");
-  c.live();
+  // c.LoadFromFile("./data/FFL1");
+  // c.LoadFromFile("./data/I1-FFL-Galactose");
+  // c.live();
+  c.liveGillespis();
   return 0;
 }

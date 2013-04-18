@@ -82,6 +82,10 @@ public:
   void		applyPromoterProduction(t_promoter *prom);
   void		applyProduction(void);
   void		live(void);
+
+  void		liveGillespis(void);
+  unsigned	applyGilespi(float &dt);
+  int		binarySearch(float sortedArray[], int  first, int  last, float key);
 };
 
 #endif

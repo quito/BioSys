@@ -14,6 +14,7 @@ Cell::Cell(bool isPlot) :
   _plot(NULL),
   _isPlot(isPlot)
 {
+  srand(time(NULL));
 }
 
 Cell::~Cell()
@@ -330,9 +331,9 @@ void		Cell::executeTree(BoolNode *tree, t_promoter *prom)
   std::vector<t_protein *>::iterator	end = prom->proteins.end();
   float					production = this->executeTreeRec(tree);
 
-  std::cout << "production de " << production * prom->productionSpeed << std::endl;
+  // std::cout << "production de " << production * prom->productionSpeed << std::endl;
   for (; it != end; ++it)
-    (*it)->tmpConcentration += this->executeTreeRec(tree) * prom->productionSpeed;
+    (*it)->tmpConcentration += production * prom->productionSpeed;
 }
 
 void		Cell::applyPromoterProduction(t_promoter *prom)
@@ -356,7 +357,6 @@ void		Cell::applyProduction(void)
     this->applyPromoterProduction((*it));
 }
 
-
 void		Cell::live(void)
 {
   _live = true;
@@ -376,5 +376,69 @@ void		Cell::live(void)
 	}
       _time += 0.001;
       usleep(1);
+    }
+}
+
+int		Cell::binarySearch(float sortedArray[], int  first, int  last, float key)
+{
+  int llast = last ;
+  int ffirst = first;
+  int mid;
+  while (ffirst <= llast)
+    {
+      mid = (int) (ffirst + llast) / 2;
+      if (key > sortedArray[mid])
+        ffirst = mid + 1;
+      else if (key < sortedArray[mid])
+        llast = mid - 1;
+      else
+        return mid;
+    }
+  return llast;
+}
+
+unsigned	Cell::applyGilespi(float &dt)
+{
+  int n = 10;
+  float rate[] = {1,2,1,1,3,1,4,1,5,1};
+
+  float		*rate_tot = new float[n + 1];
+  float		R;
+  float		u;
+  int		particule;
+
+  rate_tot[0] = 0.f;
+  for (int i = 0; i < n; i++)
+    rate_tot[i+1] = rate_tot[i] + rate[i];
+  R = rate_tot[n];
+  dt = -log(GETFRAND(100))/R;
+  // std::cout << "dt:" << dt << " other : " << GETFRAND(100) << std::endl;
+  u = GETFRAND(100);
+  particule = binarySearch(rate_tot, 0, n, R*u);
+
+  delete [] rate_tot;
+  return particule;
+}
+
+void		Cell::liveGillespis(void)
+{
+  float		dt;
+
+  _live = true;
+  while (_live)
+    {
+      if (_isPlot && !_plot)
+	this->enablePlot();
+
+      this->applyGilespi(dt);
+
+      if (_isPlot && _plot)
+	{
+	  this->updateCurves();
+	  this->drawCurves();
+	}
+      _time += dt/10;
+      // std::cout << _time << std::endl;
+      // usleep(1);
     }
 }

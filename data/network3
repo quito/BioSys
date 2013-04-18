@@ -18,17 +18,12 @@
 
 
 
-
 <protein>
   <name>X</name>
   <concentration>0.5</concentration>
   <degradationRate>0.0000</degradationRate>
   <curveColor>0xFF00FF</curveColor>
   <enableCurve>True</enableCurve>
-  <link>
-    <name>PromY</name>
-    <type>Activator</type>
-  </link>
 </protein>
 
 <protein>
@@ -37,10 +32,6 @@
   <degradationRate>0.001</degradationRate>
   <curveColor>0x00FFFF</curveColor>
   <enableCurve>True</enableCurve>
-  <link>
-    <name>PromZ</name>
-    <type>Repressor</type>
-  </link>
 </protein>
 
 <protein>
