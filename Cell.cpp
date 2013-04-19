@@ -384,6 +384,7 @@ int		Cell::binarySearch(float sortedArray[], int  first, int  last, float key)
   int llast = last ;
   int ffirst = first;
   int mid;
+
   while (ffirst <= llast)
     {
       mid = (int) (ffirst + llast) / 2;
@@ -400,24 +401,25 @@ int		Cell::binarySearch(float sortedArray[], int  first, int  last, float key)
 unsigned	Cell::applyGilespi(float &dt)
 {
   int n = 10;
-  float rate[] = {1,2,1,1,3,1,4,1,5,1};
+  float rate[] = {1,1,1,1,1,1,1,1,1,1};
 
   float		*rate_tot = new float[n + 1];
   float		R;
   float		u;
-  int		particule;
+  int		id;
 
   rate_tot[0] = 0.f;
   for (int i = 0; i < n; i++)
     rate_tot[i+1] = rate_tot[i] + rate[i];
   R = rate_tot[n];
-  dt = -log(GETFRAND(100))/R;
+  dt = -log(GETFRAND(100))/R; // U
   // std::cout << "dt:" << dt << " other : " << GETFRAND(100) << std::endl;
-  u = GETFRAND(100);
-  particule = binarySearch(rate_tot, 0, n, R*u);
-
+  u = ((float)(rand() % (int)(rate_tot[n] * 100))) / 100.f; // U'
+  std::cout << "u' = " << u << std::endl;
+  id = binarySearch(rate_tot, 0, n, u);
   delete [] rate_tot;
-  return particule;
+  std::cout << "id=" << id << std::endl;
+  return id;
 }
 
 void		Cell::liveGillespis(void)
