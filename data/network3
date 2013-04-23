@@ -21,14 +21,14 @@
 <protein>
   <name>X</name>
   <concentration>0.5</concentration>
-  <degradationRate>0.0000</degradationRate>
+  <degradationRate>0.002</degradationRate>
   <curveColor>0xFF00FF</curveColor>
   <enableCurve>True</enableCurve>
 </protein>
 
 <protein>
   <name>Y</name>
-  <concentration>0.0</concentration>
+  <concentration>0.5</concentration>
   <degradationRate>0.001</degradationRate>
   <curveColor>0x00FFFF</curveColor>
   <enableCurve>True</enableCurve>
@@ -41,3 +41,30 @@
   <curveColor>0xFFFF00</curveColor>
   <enableCurve>True</enableCurve>
 </protein>
+
+<Reaction>
+  <type>production</type>
+  <promoter>PromY</promoter>
+  <value>0.2</value>  
+</Reaction>
+<Reaction>
+  <type>production</type>
+  <promoter>PromZ</promoter>
+  <value>0.2</value>  
+</Reaction>
+
+<Reaction>
+  <type>degradation</type>
+  <protein>Y</protein>
+  <value>0.2</value>  
+</Reaction>
+<Reaction>
+  <type>degradation</type>
+  <protein>X</protein>
+  <value>0.3</value>  
+</Reaction>
+<Reaction>
+  <type>degradation</type>
+  <protein>Z</protein>
+  <value>0.2</value>  
+</Reaction>

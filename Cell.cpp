@@ -19,27 +19,27 @@ Cell::Cell(bool isPlot) :
 
 Cell::~Cell()
 {
+  this->deleteVectors();
+}
+
+void		Cell::deleteVectors(void)
+{
   std::vector<t_protein*>::iterator	it = _proteins.begin();
   std::vector<t_protein*>::iterator	end = _proteins.end();
   std::vector<t_promoter*>::iterator	pit = _promoters.begin();
   std::vector<t_promoter*>::iterator	pend = _promoters.end();
-  std::vector<BoolNode*>::iterator		fit;
-  std::vector<BoolNode*>::iterator		fend;
+  std::vector<t_reaction*>::iterator	rit = _reactions.begin();
+  std::vector<t_reaction*>::iterator	rend = _reactions.end();
 
-  delete _plot;
   for (; it != end; ++it)
     {
       delete (*it)->curve;
       delete (*it);
     }
   for (; pit != pend; ++pit)
-    {
-      fit = (*pit)->formulas.begin();
-      fend - (*pit)->formulas.end();
-      for (; fit != fend; ++fit)
-	delete (*fit);
-      delete (*pit);
-    }
+    delete (*pit);
+  for (; rit != rend; ++rit)
+    delete (*rit);
 }
 
 void		Cell::loadFormulas(tinyxml2::XMLDocument &xml,
@@ -142,15 +142,91 @@ bool		Cell::loadProteins(tinyxml2::XMLDocument &xml)
   return true;  
 }
 
+// don't forget : make sum of reaction rate of 
+bool			Cell::loadReactions(tinyxml2::XMLDocument &xml)
+{
+  tinyxml2::XMLNode	*nodeReaction;
+  tinyxml2::XMLNode	*nodeReactionType;
+  tinyxml2::XMLNode	*nodePromoter;
+  tinyxml2::XMLNode	*nodeProtein;
+  tinyxml2::XMLNode	*nodeValue;
+  t_reaction		*reaction;
+
+  nodeReaction = xml.FirstChildElement("Reaction");
+  while (nodeReaction)
+    {
+      nodeReactionType = nodeReaction->FirstChildElement("type");
+      nodePromoter = nodeReaction->FirstChildElement("promoter");
+      nodeProtein = nodeReaction->FirstChildElement("protein");
+      nodeValue = nodeReaction->FirstChildElement("value");
+      if (nodeReactionType && nodeValue)
+	{
+	  reaction = new t_reaction;
+	  reaction->promoter = NULL;
+	  reaction->protein = NULL;
+
+	  if (!strcmp(nodeReactionType->ToElement()->GetText(), "degradation"))
+	    reaction->type = Reaction::DEGRADATION;
+	  else if (!strcmp(nodeReactionType->ToElement()->GetText(), "production"))
+	    reaction->type = Reaction::PRODUCTION;
+	  else
+	    {
+	      std::cerr << "Bad type of reaction in xml configuration file";
+	      delete reaction;
+	      return false;
+	    }
+
+	  if (reaction->type == Reaction::PRODUCTION)
+	    {
+	      reaction->promoter = this->getPromoterFromName(nodePromoter->ToElement()->GetText());
+	      if (!(reaction->promoter))
+		{
+		  std::cerr << "Bad promoter name in XML file" << std::endl;
+		  delete reaction;
+		  return false;
+		}
+	    }
+	  else if (reaction->type == Reaction::DEGRADATION)
+	    {
+	    reaction->protein =  this->getProteinFromName(nodeProtein->ToElement()->GetText());
+	    if (!(reaction->protein))
+	      {
+		std::cerr << "Bad protein name in XML file";
+		delete reaction;
+		return false;	      
+	      }
+	    }
+
+	  reaction->rate = atof(nodeValue->ToElement()->GetText());
+	  _reactions.push_back(reaction);
+	}
+      else
+	{
+	  std::cerr << "Bad reaction format in xml configuration file" << std::endl;
+	  return false;
+	}
+      xml.DeleteNode(nodeReaction);
+      nodeReaction = xml.FirstChildElement("Reaction");
+    }  
+  return true;
+}
+
 bool		Cell::LoadFromFile(const std::string &path)
 {
   tinyxml2::XMLDocument	doc;
 
+  this->deleteVectors();
+  _proteins.clear();
+  _promoters.clear();
+  _reactions.clear();
   doc.LoadFile(path.c_str());
+
   loadPromoters(doc);
   std:: cout << "[\033[1;32m+\033[0m] Promoters Loaded" << std::endl;
   loadProteins(doc);
   std:: cout << "[\033[1;32m+\033[0m] Proteins Loaded" << std::endl;
+  loadReactions(doc);
+  std:: cout << "[\033[1;32m+\033[0m] Interraction Loaded" << std::endl;
   makeNetwork();
   std:: cout << "[\033[1;32m+\033[0m] Network Linked" << std::endl;
   return true;
@@ -236,7 +312,7 @@ void		Cell::enablePlot(void)
 
   if (_plot)
     delete _plot;
-  _plot = new Plot(-0.1, 5, -0.1, 1, 600, 600, "Systems Biology simulation");
+  _plot = new Plot(-0.1, 1000, -0.1, 1, 600, 600, "Systems Biology simulation");
   _isPlot = true;
   _plot->drawRules();
   for (; it != end; ++it)
@@ -379,6 +455,7 @@ void		Cell::live(void)
     }
 }
 
+
 int		Cell::binarySearch(float sortedArray[], int  first, int  last, float key)
 {
   int llast = last ;
@@ -398,41 +475,87 @@ int		Cell::binarySearch(float sortedArray[], int  first, int  last, float key)
   return llast;
 }
 
-unsigned	Cell::applyGilespi(float &dt)
+unsigned	Cell::applyGilespi(float &dt, float *rates, unsigned sizeRatesTab)
 {
-  int n = 10;
-  float rate[] = {1,1,1,1,1,1,1,1,1,1};
-
-  float		*rate_tot = new float[n + 1];
   float		R;
   float		u;
   int		id;
+  float		*rate_tot = new float[sizeRatesTab + 1];
 
   rate_tot[0] = 0.f;
-  for (int i = 0; i < n; i++)
-    rate_tot[i+1] = rate_tot[i] + rate[i];
-  R = rate_tot[n];
+  for (unsigned i = 0; i < sizeRatesTab; i++)
+    rate_tot[i+1] = rate_tot[i] + rates[i];
+  R = rate_tot[sizeRatesTab];
   dt = -log(GETFRAND(100))/R; // U
   // std::cout << "dt:" << dt << " other : " << GETFRAND(100) << std::endl;
-  u = ((float)(rand() % (int)(rate_tot[n] * 100))) / 100.f; // U'
-  std::cout << "u' = " << u << std::endl;
-  id = binarySearch(rate_tot, 0, n, u);
+  u = ((float)(rand() % (int)(rate_tot[sizeRatesTab] * 100))) / 100.f; // U'
+  // std::cout << "u' = " << u << std::endl;
+  id = binarySearch(rate_tot, 0, sizeRatesTab, u);
   delete [] rate_tot;
-  std::cout << "id=" << id << std::endl;
+  // std::cout << "id=" << id << std::endl;
   return id;
+}
+
+float		*Cell::setGillespiRate(unsigned &sizeRatesTab)
+{
+  unsigned				i;
+  float					*rates = NULL;
+  std::vector<t_reaction*>::iterator	it = _reactions.begin();
+  std::vector<t_reaction*>::iterator	end = _reactions.end();
+
+
+  rates = new float[_reactions.size()];
+  sizeRatesTab = _reactions.size();
+  i = 0;
+  for (; it != end; ++it)
+    if ((*it))
+      rates[i++] = (*it)->rate;
+  return rates;
+}
+
+void		Cell::applyDegradation(t_protein *protein)
+{
+  if (protein)
+    protein->concentration *= 1.f - protein->degradationRate;
+}
+
+void		Cell::applyProduction(t_promoter *promoter)
+{
+  
+}
+
+void		Cell::applyReaction(unsigned id)
+{
+  if (id < _reactions.size() && _reactions[id])
+    {
+      if (_reactions[id]->type == Reaction::PRODUCTION)
+	this->applyProduction(_reactions[id]->promoter);
+      else if (_reactions[id]->type == Reaction::DEGRADATION)
+	this->applyDegradation(_reactions[id]->protein);
+    }
+  else
+    std::cerr << "[-] Bad reaction ID"<< std::endl;
 }
 
 void		Cell::liveGillespis(void)
 {
   float		dt;
+  float		*rates;
+  unsigned	sizeRatesTab;
+  unsigned	idReaction;
+  
+  //tmp
+  _isPlot = true;
 
   _live = true;
+  rates = this->setGillespiRate(sizeRatesTab);
   while (_live)
     {
       if (_isPlot && !_plot)
 	this->enablePlot();
 
-      this->applyGilespi(dt);
+      idReaction = this->applyGilespi(dt, rates, sizeRatesTab);
+      this->applyReaction(idReaction);
 
       if (_isPlot && _plot)
 	{

@@ -38,6 +38,23 @@ typedef struct	s_promoter
   std::vector<BoolNode*>		formulas;
   std::vector<struct s_protein *>	proteins;
 }		t_promoter;
+namespace Reaction
+{
+  enum Type
+    {
+      DEGRADATION,
+      PRODUCTION
+    };
+}
+typedef struct	s_reaction
+{
+  Reaction::Type	type;
+  t_protein		*protein;
+  t_promoter		*promoter;
+  float			rate;
+}		t_reaction;
+
+
 
 class Cell
 {
@@ -45,6 +62,7 @@ private:
   
   std::vector<t_protein*>	_proteins;
   std::vector<t_promoter*>	_promoters;
+  std::vector<t_reaction*>	_reactions;
   bool				_live;
   float				_time;
 
@@ -56,8 +74,10 @@ public:
   
   Cell(bool isPlot = false);
   ~Cell();
-  
+
+  void		deleteVectors(void);
   bool		LoadFromFile(const std::string &path);
+  bool		loadReactions(tinyxml2::XMLDocument &xml);
   void		loadFormulas(tinyxml2::XMLDocument &xml, tinyxml2::XMLNode *prom,
 				   t_promoter *promoter);
   bool		loadPromoters(tinyxml2::XMLDocument &xml);
@@ -83,9 +103,13 @@ public:
   void		applyProduction(void);
   void		live(void);
 
-  void		liveGillespis(void);
-  unsigned	applyGilespi(float &dt);
+  void		applyDegradation(t_protein *protein);
+  void		applyProduction(t_promoter *promoter);
+  void		applyReaction(unsigned id);
+  float		*setGillespiRate(unsigned &sizeRatesTab);
   int		binarySearch(float sortedArray[], int  first, int  last, float key);
+  unsigned	applyGilespi(float &dt, float *rates, unsigned sizeRatesTab);
+  void		liveGillespis(void);
 };
 
 #endif
